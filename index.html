@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b1020">
+<link rel="manifest" href="manifest.json">
+<title>Realm Clash</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="hero-select.css">
+<link rel="stylesheet" href="draft.css">
+</head>
+<body oncontextmenu="return false">
+
+<!-- ============ LOBBY ============ -->
+<section id="lobby" class="screen active">
+  <div class="lobby-bg"></div>
+  <div class="lobby-vignette"></div>
+
+  <header class="lobby-top">
+    <div class="player-card" id="lobbyProfile">
+      <div class="p-ava-wrap">
+        <div id="lobbyPort" class="p-ava">🔮</div>
+        <span id="lobbyLv" class="p-lv">Lv. 1</span>
+      </div>
+      <div class="p-meta">
+        <div id="lobbyName" class="p-name">Blaze · Fighter</div>
+        <div id="lobbyStats" class="p-sub">Matches 0 · Wins 0</div>
+        <div class="p-xp"><i id="lobbyXpFill"></i></div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="coin-pill">🪙 <span class="coins">0</span></div>
+    <button class="icon-btn" id="tglSfx" title="Sound FX"></button>
+    <button class="icon-btn" id="tglMusic" title="Music"></button>
+    <button class="icon-btn fs-btn" id="tglFs" title="Full View">⛶</button>
+  </header>
+
+  <div class="lobby-body">
+    <nav class="side-rail">
+      <button class="rail-btn active" id="navHome"><span>🏠</span><small>Home</small></button>
+      <button class="rail-btn" id="navHeroes"><span>🛡️</span><small>Heroes</small></button>
+      <button class="rail-btn" id="navShop"><span>⚖️</span><small>Shop</small></button>
+      <button class="rail-btn" id="navQuests"><span>📜</span><small>Quests</small></button>
+    </nav>
+
+    <div class="lobby-center">
+      <div class="crest-wrap">
+        <div class="crest">👑</div>
+        <h1>REALM <span>CLASH</span></h1>
+        <p class="subtitle">Offline 2.5D Lane · MOBA</p>
+      </div>
+      <button class="play-hex" id="btnPlay">▶ PLAY</button>
+      <button class="sub-cta" id="btnHeroes">🛡️ HEROES &amp; SHOP</button>
+    </div>
+
+    <aside class="lobby-right">
+      <div class="promo-card" id="promoFelix">
+        <div class="promo-art"></div>
+        <div class="promo-txt">
+          <span class="badge-new">NEW HERO</span>
+          <b>FELIX</b>
+          <small>Now Available! ›</small>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="lobby-dock">
+    <div class="ticker">💬 Welcome to Realm Clash!</div>
+    <div class="dock-links">
+      <button class="dock-btn" id="dockPrep">⚔️ Preparation</button>
+      <button class="dock-btn" id="dockQuests">📋 Quests <i id="questDot" class="dot hidden"></i></button>
+    </div>
+    <button class="mode-badge" id="dockMode">
+      <span class="mb-ico">⚔️</span>
+      <div><b id="dockModeTxt">1 v 1 Duel</b><small>Tap to switch ›</small></div>
+    </button>
+  </footer>
+
+  <div id="questsModal" class="modal hidden">
+    <div class="modal-box quests-box">
+      <div class="q-head"><h2 id="questsTitle">📜 QUESTS &amp; REWARDS</h2><button class="btn small" id="questsClose">✕</button></div>
+      <div id="questList" class="quest-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODES ============ -->
+<section id="modes" class="screen">
+  <div class="topbar">
+    <button class="btn small" id="modesBack">← Back</button>
+    <h2 class="title">SELECT MODE</h2>
+    <div class="spacer"></div>
+    <div class="coin-pill">🪙 <span class="coins">0</span></div>
+  </div>
+  <div class="mode-row">
+    <div class="mode-card" data-mode="1"><div class="m-ico">⚔️</div><h3>1 v 1</h3><p class="muted">Duel</p></div>
+    <div class="mode-card" data-mode="3"><div class="m-ico">🛡️</div><h3>3 v 3</h3><p class="muted">Skirmish</p></div>
+    <div class="mode-card" data-mode="5"><div class="m-ico">🏰</div><h3>5 v 5</h3><p class="muted">Classic</p></div>
+    <div class="mode-card" data-mode="practice"><div class="m-ico">🎯</div><h3>Practice</h3><p class="muted">1 v 1 Training</p></div>
+  </div>
+</section>
+
+<!-- ============ PRACTICE SETUP (1v1 training) ============ -->
+<section id="practice" class="screen">
+  <div class="topbar">
+    <button class="btn small" id="prBack">← Back</button>
+    <h2 class="title">🎯 PRACTICE · 1 v 1</h2>
+    <div class="spacer"></div>
+    <button class="btn small" id="prMaxBoth">⭐ MAX BOTH</button>
+  </div>
+  <div class="ps-body">
+    <div class="ps-heroes">
+      <div class="ps-lab blue">YOUR HERO</div><div id="psMeGrid" class="ps-grid"></div>
+      <div class="ps-lab red">ENEMY HERO</div><div id="psEnGrid" class="ps-grid"></div>
+    </div>
+    <div class="ps-opts">
+      <div class="ps-row"><span>Your level</span><div class="ps-step"><button data-ps="lv-me-down">−</button><b id="psLvMe">1</b><button data-ps="lv-me-up">+</button><button data-ps="lv-me-max" class="mx">MAX</button></div></div>
+      <div class="ps-row"><span>Enemy level</span><div class="ps-step"><button data-ps="lv-en-down">−</button><b id="psLvEn">1</b><button data-ps="lv-en-up">+</button><button data-ps="lv-en-max" class="mx">MAX</button></div></div>
+      <button class="ps-tg" data-ps="freezeEnemy"><span>🧊 Freeze enemy <small>stands still, no attacks</small></span><em>OFF</em></button>
+      <button class="ps-tg" data-ps="noCdMe"><span>⚡ No cooldowns · you</span><em>OFF</em></button>
+      <button class="ps-tg" data-ps="noCdEnemy"><span>⚡ No cooldowns · enemy</span><em>OFF</em></button>
+      <button class="ps-tg" data-ps="minions"><span>👥 Minion waves</span><em>OFF</em></button>
+      <button class="ps-tg" data-ps="dummy"><span>🎯 Damage bot <small>target + DPS meter</small></span><em>OFF</em></button>
+    </div>
+  </div>
+  <div class="select-foot"><button class="btn big" id="prStart">⚔ START PRACTICE</button></div>
+</section>
+
+<!-- ============ HERO SELECT / SHOP ============ -->
+<section id="select" class="screen">
+  <div class="topbar">
+    <button class="back-btn" id="selBack">&#8592; Back</button>
+    <h2 class="title" id="selTitle">CHOOSE YOUR HERO</h2>
+    <div id="roleTabs" class="role-tabs"></div>
+    <div class="spacer"></div>
+    <div class="coin-pill">🪙 <span class="coins">0</span></div>
+  </div>
+  <div class="select-main">
+    <div id="heroGrid" class="hero-grid"></div>
+    <div id="detail" class="detail"></div>
+  </div>
+  <div class="select-foot"><button class="btn big start-btn" id="btnStart">⚔ START BATTLE</button></div>
+</section>
+
+<!-- ============ HERO DRAFT (MLBB-style pick phase before the match) ============ -->
+<section id="draft" class="screen">
+  <div class="dr-top">
+    <button class="back-btn" id="drBack" type="button">&#8592; Back</button>
+    <div class="dr-title"><b>CHOOSE YOUR HERO</b><small id="drMode">Classic · 5 v 5</small></div>
+    <div class="dr-timer" id="drTimer"><i></i><b id="drSec">15</b></div>
+  </div>
+  <div class="dr-main">
+    <aside class="dr-team">
+      <div class="dr-lab">YOUR TEAM</div>
+      <div id="drTeam" class="dr-rows"></div>
+    </aside>
+    <div class="dr-stage" id="drStage">
+      <div class="dr-glow"></div>
+      <div id="drHero" class="dr-hero"></div>
+      <div class="dr-info">
+        <div class="dr-name"><h2 id="drName">Hero</h2><span id="drRole" class="role-pill"></span></div>
+        <p id="drQuote" class="d-quote"></p>
+        <div id="drSkills" class="skills-row dr-skills"></div>
+      </div>
+      <div id="drLocked" class="dr-locked hidden">&#10004; HERO LOCKED IN</div>
+    </div>
+    <aside class="dr-pick">
+      <div id="drGrid" class="dr-grid"></div>
+      <button class="dr-select" id="drSelect" type="button">SELECT</button>
+    </aside>
+  </div>
+  <div id="drToast" class="dr-toast hidden"></div>
+</section>
+
+<!-- ============ BATTLE ============ -->
+<section id="battle" class="screen">
+  <canvas id="game"></canvas>
+  <div id="panZone"></div>
+  <div id="dimmer"></div>
+  <!-- Top-center match info: BLUE score | time | RED score, hero portraits (with respawn timers) underneath -->
+  <div id="topCenter">
+    <button id="scoreBox" type="button" title="Open Live Scoreboard">
+      <span class="sb-side blue-side"><em>BLUE</em><b id="sb">0</b></span>
+      <span id="timer">00:00</span>
+      <span class="sb-side red-side"><b id="sr">0</b><em>RED</em></span>
+    </button>
+    <div id="portStrip" title="Open Live Scoreboard">
+      <div id="ptBlue" class="pt-team blue-team"></div>
+      <div id="ptRed" class="pt-team red-team"></div>
+    </div>
+  </div>
+  
+
+  <!-- Clean Top-Left Hero Frame -->
+  <div id="heroHud">
+    <div class="portrait-wrap">
+      <div id="hudPort" class="portrait">🔥</div>
+      <div id="portRespawn" class="port-respawn hidden">0</div>
+      <span id="hudLv" class="lv-badge">LV1</span>
+      <!-- v5.9: appears when the next build item is affordable; tap = buy, ✕ = dismiss -->
+      <button id="buildReady" class="build-ready hidden" type="button" aria-label="Build item ready: tap to buy">
+        <span id="brIco" class="br-ico">⚔</span><span class="br-txt"><b id="brName">Item</b><small id="brCost">TAP TO BUY</small></span><span id="brX" class="br-x" role="button" aria-label="Dismiss">✕</span>
+      </button>
+    </div>
+    <div class="hero-bars">
+      <div class="gold-tag">🪙 <b id="hudGold">0</b> <button id="btnBattleShop" class="battle-shop-open" type="button">SHOP</button> <span id="hudSp" class="sp-tag hidden">+1 SP</span></div>
+      <div class="bar-track hp"><div id="hudHpFill"></div><span id="hudHpTxt">1100/1100</span></div>
+      <div class="bar-track mana"><div id="hudManaFill"></div><span id="hudManaTxt">0/0 MANA</span></div>
+      <div class="bar-track xp"><div id="hudXpFill"></div></div>
+    </div>
+  </div>
+
+  <!-- Top-Right Minimap, Menu & Score -->
+  <div id="hudRight">
+    <div class="hud-top-row">
+      <button id="btnBattleFs" class="menu-btn fs" title="Full View">⛶</button>
+      <button id="btnPause" class="menu-btn">MENU</button>
+      <canvas id="minimap"></canvas>
+    </div>
+    <div class="hud-sub-row">
+      <div id="kdaBox">⚔️<b id="pk">0</b> 💀<b id="pd">0</b> 🤝<b id="pa">0</b><span id="pcsWrap" hidden> · CS <b id="pcs">0</b></span></div>
+    </div>
+  </div>
+
+  <!-- MLBB-Style Direct 1-Tap Quick Command Rail (Right Edge) -->
+  <div id="pingRail" class="ping-rail">
+    <button class="ping-btn atk" data-ping="ATTACK" title="Attack!">⚔️</button>
+    <button class="ping-btn ret" data-ping="FALLBACK" title="Retreat!">🛡️</button>
+    <button class="ping-btn gth" data-ping="BACKUP" title="Gather / Backup!">🤝</button>
+    <button class="ping-btn msg" id="btnChatMore" title="Quick Chat">💬</button>
+  </div>
+  <div id="chatDrawer" class="chat-drawer hidden">
+    <button data-ping="DEFEND">🏰 Defend Base!</button>
+    <button data-ping="MISSING">👁️ Enemy Missing!</button>
+    <button data-ping="PUSH">🔥 Push Lane!</button>
+    <button data-ping="WP">👍 Well Played!</button>
+  </div>
+
+  <div id="killBanner" class="kill-banner hidden"></div>
+  <div id="prepBanner" class="prep-banner hidden"></div>
+  <div id="feed"></div>
+  <div id="respawnMsg" class="hidden"></div>
+  <div id="showcase" class="hidden"></div>
+  <div id="endBanner" class="hidden"></div>
+  <div id="wipeBanner" class="hidden"></div>
+
+  <div id="joyZone"><div id="joyHint"></div><div id="joyBase"><div id="joyKnob"></div></div></div>
+
+  <!-- v7.5 Passive indicator (bottom centre): appears only while the hero's passive effect is active -->
+  <div id="passiveChip" class="passive-chip hidden" aria-hidden="true">
+    <span class="pc-ico"></span><b class="pc-n"></b><small class="pc-t"></small>
+  </div>
+
+  <!-- Bottom Battle Spells: Recall + Regen (MLBB Classic Lane) -->
+  <div id="spellBar">
+    <div class="spell-wrap">
+      <div id="recallProg" class="recall-prog hidden"><i id="recallFill"></i></div>
+      <button id="btnRecall" class="spell-btn recall" title="Recall (B)">
+        <span class="ico"><img class="ico-img" src="icons/recall.png" alt="" draggable="false" data-fb="🏠" onerror="this.replaceWith(document.createTextNode(this.dataset.fb))"></span><div class="cd"></div><span class="cdt"></span>
+      </button>
+      <small>Recall</small>
+    </div>
+    <div class="spell-wrap">
+      <button id="btnRegen" class="spell-btn regen" title="Regen (H)">
+        <span class="ico"><img class="ico-img" src="icons/regen1.jpg" alt="" draggable="false" data-fb="💚" onerror="this.replaceWith(document.createTextNode(this.dataset.fb))"></span><div class="cd"></div><span class="cdt"></span>
+      </button>
+      <small>Regen</small>
+    </div>
+  </div>
+
+  <!-- Skill-aim cancel zone: shown only while a skill is being aimed; release here to cancel -->
+  <div id="cancelZone" class="cancel-zone" aria-hidden="true"><span class="cz-x">✕</span><div class="cz-t"><b>CANCEL</b><small id="czHint">drag here to cancel</small></div></div>
+
+  <div id="skillPad">
+    <button id="btnS2" class="sbtn"></button>
+    <button id="btnS1" class="sbtn"></button>
+    <button id="btnS0" class="sbtn"></button>
+    <button id="btnAtk" class="sbtn atk">🗡️</button>
+  </div>
+
+  <!-- Practice mode only: floating options panel (hidden in normal matches) -->
+  <button id="prFab" class="pr-fab hidden" type="button" title="Practice options">🛠</button>
+  <div id="prPanel" class="pr-panel hidden">
+    <div class="pr-head"><b>🛠 PRACTICE</b><button id="prClose" type="button" class="pr-x">✕</button></div>
+    <div class="pr-row"><span>You</span><button data-pr="lv-me-down">−</button><b>Lv <i id="prLvMe">1</i></b><button data-pr="lv-me-up">+</button><button data-pr="lv-me-max" class="mx">MAX</button></div>
+    <div class="pr-row"><span>Enemy</span><button data-pr="lv-en-down">−</button><b>Lv <i id="prLvEn">1</i></b><button data-pr="lv-en-up">+</button><button data-pr="lv-en-max" class="mx">MAX</button></div>
+    <button class="pr-tg wide gold" data-pr="max-both">⭐ MAX BOTH</button>
+    <button class="pr-tg" data-pr="freeze"><span>🧊 Freeze enemy</span><em>OFF</em></button>
+    <button class="pr-tg" data-pr="nocd-me"><span>⚡ No CD · you</span><em>OFF</em></button>
+    <button class="pr-tg" data-pr="nocd-en"><span>⚡ No CD · enemy</span><em>OFF</em></button>
+    <button class="pr-tg" data-pr="no-mana"><span>💧 No Mana Cost · you</span><em>OFF</em></button>
+    <button class="pr-tg" data-pr="minions"><span>👥 Minion waves</span><em>OFF</em></button>
+    <button class="pr-tg wide" data-pr="clear-wave">🧹 Clear current wave</button>
+    <button class="pr-tg" data-pr="dummy"><span>🎯 Damage bot</span><em>OFF</em></button>
+    <button class="pr-tg wide" data-pr="reset-heroes">🔄 Reset heroes (heal · cooldowns · position)</button>
+    <button class="pr-tg wide gold" data-pr="switch-hero">🔁 Switch hero</button>
+    <div id="prPick" class="pr-pick hidden"></div>
+    <button class="pr-tg wide" data-pr="reset-meter">📊 Reset damage meter</button>
+  </div>
+  <!-- always-visible damage meter (counts your hits on the enemy hero + damage bot); tap to reset -->
+  <div id="prMeter" class="pr-meter hidden" title="Tap to reset">
+    <span>DPS</span><b id="prDps">0</b><span>Total</span><b id="prTotal">0</b>
+    <span>Last</span><b id="prLast">0</b><span>Best</span><b id="prBest">0</b>
+  </div>
+
+  <div id="battleShopModal" class="modal hidden">
+    <div class="modal-box battle-shop-box">
+      <div class="shop-top">
+        <h2>⚒ BATTLE SHOP</h2>
+        <div class="shop-gold">🪙 <b id="shopGold">0</b> G</div>
+        <label class="shop-auto" title="Automatically buys and assembles your prioritized builds when you can afford the next step"><input id="shopAutoBuy" type="checkbox"> Auto-Buy</label>
+        <button class="btn small" id="battleShopClose" aria-label="Close shop">✕</button>
+      </div>
+      <div class="shop-body">
+        <nav id="battleShopCategories" class="shop-cats" aria-label="Equipment categories">
+          <button data-shop-category="attack" class="active">Attack</button><button data-shop-category="magic">Magic</button><button data-shop-category="defense">Defense</button><button data-shop-category="movement">Movement</button><button data-shop-category="jungle">Jungle</button><button data-shop-category="roam">Roam</button>
+          <button id="shopModeToggle" class="shop-mode" type="button" title="Show or hide components and intermediate items">Simple Mode</button>
+        </nav>
+        <div id="battleShopItems" class="shop-items"></div>
+        <aside id="battleShopDetail" class="shop-detail"></aside>
+      </div>
+      <div class="shop-bottom">
+        <div id="battleShopInventory" class="shop-inv"></div>
+        <div id="battleShopQueue" class="shop-queue"></div>
+      </div>
+      <div id="battleShopStatus" class="battle-shop-status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div id="scoreModal" class="modal hidden">
+    <div class="modal-box wide">
+      <div class="q-head"><h2>📊 MATCH SCOREBOARD</h2><button class="btn small" id="scoreClose">✕</button></div>
+      <div id="liveBoard" class="live-board"></div>
+      <div id="sbItemDetail" class="sb-item-detail"><small>Tap any equipment slot to inspect an item.</small></div>
+    </div>
+  </div>
+
+  <div id="pauseMenu" class="modal hidden">
+    <div class="modal-box">
+      <h2>PAUSED</h2>
+      <button class="btn" id="pResume">▶ Resume</button>
+      <button class="btn" id="pSfx"></button>
+      <button class="btn" id="pMusic"></button>
+      <button class="btn" id="pGfx">✨ Graphics: High</button>
+      <button class="btn" id="pFs">⛶ Full View</button>
+      <button class="btn" id="pCtrl">🎮 Controls</button>
+      <div id="pCtrlBox" class="ctrl-box hidden">
+        <small>Move: Joystick / WASD · Attack: 🗡️ / Space · Skills: Tap to quick-cast, or hold &amp; drag to aim (release over ✕ CANCEL to cancel) / 1-2-3 · Recall: B · Regen: H</small>
+      </div>
+      <button class="btn danger" id="pQuit">🚪 Quit Match</button>
+      <div id="quitConfirm" class="hidden">
+        <p class="muted">Quit now? You won't earn any coins.</p>
+        <button class="btn danger small" id="pQuitYes">Yes, quit</button>
+        <button class="btn small" id="pQuitNo">Cancel</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section id="result" class="screen">
+  <h1 id="resBanner"></h1>
+  <p id="resNote" class="res-note hidden">🚪 You left the match early — counted as a defeat, no coins or XP earned.</p>
+  <div class="res-teams">
+    <div class="team-col"><h3 class="blue">YOUR TEAM</h3><div id="resBlue"></div></div>
+    <div class="team-col"><h3 class="red">ENEMY TEAM</h3><div id="resRed"></div></div>
+  </div>
+  <p class="res-note">👑 <b>MVP</b> = best score on each team (kills, assists, damage, towers, healing, CS, minus deaths) · gold = winners, silver = losers</p>
+  <div class="res-foot">
+    <div class="pill big">+<span id="resCoins">0</span> 🪙 <span id="resXp"></span></div>
+    <button class="btn big" id="btnBackLobby">🏠 Back to Lobby</button>
+  </div>
+</section>
+
+<div id="rotate"><div>📱↻<p>Please rotate your device to landscape</p></div></div>
+
+<script src="splash.js"></script>
+<script src="data.js"></script>
+<script src="item-data.js"></script>
+<script src="equipment.js"></script>
+<script src="shop-system.js"></script>
+<script src="battle.js"></script>
+<script src="main.js"></script>
+<script>RealmSplash.start({ onComplete: function () {} }); /* v7.7: Ramos Studio logo 3.5s -> hero scene 5s + loading bar -> lobby (already active underneath) */</script>
+</body>
+</html>
